@@ -4,7 +4,8 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 # Load audio file
-sample_rate, audio_data = wavfile.read('your_audio_file.wav')
+filepath = "filtered"
+sample_rate, audio_data = wavfile.read(filepath)
 
 # Function to apply filters
 def apply_filter(audio, filter_type, cutoff_freq, sample_rate):
