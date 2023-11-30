@@ -4,7 +4,7 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 # Load audio file
-filepath = "filtered"
+filepath = "filtered.wav"
 sample_rate, audio_data = wavfile.read(filepath)
 
 # Function to apply filters
@@ -20,13 +20,13 @@ def apply_filter(audio, filter_type, cutoff_freq, sample_rate):
 
 # Define filter parameters
 filter_type = 'lowpass'  # Change this to 'highpass' for high-pass filter
-cutoff_frequency = 400  # Cutoff frequency in Hz
+cutoff_frequency = 10000  # Cutoff frequency in Hz
 
 # Apply filter
 filtered_audio = apply_filter(audio_data[:, 0], filter_type, cutoff_frequency, sample_rate)
 
 # Save filtered audio to a new WAV file
-filtered_filename = f'filtered_{filter_type}.wav'
+filtered_filename = f'filtered_{filter_type}_{cutoff_frequency}.wav'
 wavfile.write(filtered_filename, sample_rate, np.int16(filtered_audio))
 
 # Calculate spectrum before and after filtering

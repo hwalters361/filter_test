@@ -1,4 +1,7 @@
 window.onload = function() {
+  let stopAudio = false;
+  let source = null; // Declare source variable outside the function
+
   const audioFileInput = document.getElementById('audioFile');
   const canvas = document.getElementById('spectrogram');
   const ctx = canvas.getContext('2d');
@@ -8,9 +11,34 @@ window.onload = function() {
     const reader = new FileReader();
 
     reader.onload = function(event) {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      audioContext.decodeAudioData(event.target.result, function(buffer) {
-        visualizeSpectrogram(buffer, audioContext, canvas, ctx);
+      document.getElementById("stop").addEventListener("click", function() {
+        stopAudio = true;
+        if (source) {
+          source.stop();
+        }
+      });
+
+      document.getElementById("play").addEventListener("click", function() {
+        stopAudio = false;
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioContext.decodeAudioData(event.target.result, function(buffer) {
+          if (source) {
+            source.stop();
+          }
+          source = audioContext.createBufferSource(); // Create a new buffer source each time
+          source.buffer = buffer;
+
+          // Create a low-pass filter
+          const filter = audioContext.createBiquadFilter();
+          filter.type = 'lowshelf';
+          filter.frequency.value = 400; // Set the frequency value as desired
+
+          // Connect nodes: source -> filter -> destination
+          source.connect(filter);
+          filter.connect(audioContext.destination);
+          
+          visualizeSpectrogram(source, audioContext, canvas, ctx);
+        });
       });
     };
 
@@ -19,10 +47,7 @@ window.onload = function() {
     }
   });
   
-  function visualizeSpectrogram(buffer, audioContext, canvas, ctx) {
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-
+  function visualizeSpectrogram(source, audioContext, canvas, ctx) {
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
 
@@ -38,7 +63,12 @@ window.onload = function() {
       const WIDTH = canvas.width;
       const HEIGHT = canvas.height;
 
-      requestAnimationFrame(draw);
+      if (!stopAudio){
+        requestAnimationFrame(draw);
+      } else {
+        source.stop();
+        requestAnimationFrame(draw);
+      }
 
       analyser.getByteFrequencyData(dataArray);
 
