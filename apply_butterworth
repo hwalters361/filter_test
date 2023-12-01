@@ -60,9 +60,9 @@ def process_audio(filepath, filter_type, cutoff_frequency):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='MostActiveCookie',
-        description='Finds the most active cookie from a csv log of cookies',
-        usage='%(prog)s filename [-h] [-t FILTERTYPE] [-q FREQUENCY]'
+        prog='Apply Butterworth',
+        description='Applies a butterworth highpass or lowpass filter to an audio file, displays original & filtered spectras',
+        usage='%(prog)s filename [-h] [-t FILTERTYPE] [-c CUTOFF_FREQUENCY]'
     )
     parser.add_argument('filename')
     parser.add_argument('filterType') # highpass or lowpass
