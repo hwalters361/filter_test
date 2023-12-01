@@ -40,23 +40,23 @@ def process_audio(filepath, filter_type, cutoff_frequency):
     frequencies, spectrum_before = signal.periodogram(audio_data[:, 0], sample_rate)
     frequencies, spectrum_after = signal.periodogram(filtered_audio, sample_rate)
 
-    # Plot the spectra
-    plt.figure(figsize=(10, 6))
+    # plot the spectra
+    # plt.figure(figsize=(10, 6))
 
-    plt.subplot(2, 1, 1)
-    plt.semilogy(frequencies, spectrum_before)
-    plt.title('Original Audio Spectrum')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Amplitude (log scale)')
+    # plt.subplot(2, 1, 1)
+    # plt.semilogy(frequencies, spectrum_before)
+    # plt.title('Original Audio Spectrum')
+    # plt.xlabel('Frequency (Hz)')
+    # plt.ylabel('PSD (log scale)')
 
-    plt.subplot(2, 1, 2)
-    plt.semilogy(frequencies, spectrum_after)
-    plt.title(f'Filtered Audio Spectrum, {filter_type} at {cutoff_frequency} Hz')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Amplitude (log scale)')
+    # plt.subplot(2, 1, 2)
+    # plt.semilogy(frequencies, spectrum_after)
+    # plt.title(f'Filtered Audio Spectrum, {filter_type} at {cutoff_frequency} Hz')
+    # plt.xlabel('Frequency (Hz)')
+    # plt.ylabel('PSD (log scale)')
 
-    plt.tight_layout()
-    plt.show()
+    # plt.tight_layout()
+    # plt.show()
 
 def main():
     parser = argparse.ArgumentParser(
