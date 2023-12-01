@@ -1,8 +1,7 @@
 window.onload = function() {
-
-
   let stopAudio = false;
   let source = null; // Declare source variable outside the function
+  let audio_data = null;
 
   var audioFileInput = document.getElementById('audioFile');
   var canvas = document.getElementById('spectrogram');
@@ -13,7 +12,9 @@ window.onload = function() {
 
   var setB = document.getElementById('setB');
   B = setB.value;
-  console.log("okayyy");
+
+  var setw = document.getElementById('setw');
+  w = setw.value;
 
   audioFileInput.addEventListener('change', function(event) {
     const file = event.target.files[0];
@@ -27,21 +28,26 @@ window.onload = function() {
         }
       });
 
-      document.getElementById("play").addEventListener("click", function() {
-        stopAudio = false;
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        audioContext.decodeAudioData(event.target.result, function(buffer) {
+      loaded = true;
+      audio_data = event.target.result;
+      
+    };
+
+    document.getElementById("play").addEventListener("click", function() {
+      stopAudio = false;
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio_data){
+        audioContext.decodeAudioData(audio_data, function(buffer) {
           if (source) {
             source.stop();
           }
           source = audioContext.createBufferSource(); // Create a new buffer source each time
           source.buffer = buffer;
 
-          
           visualizeSpectrogram(source, audioContext, canvas, ctx);
         });
-      });
-    };
+      }
+    });
 
     if (file) {
       reader.readAsArrayBuffer(file);
@@ -58,24 +64,24 @@ window.onload = function() {
     source.connect(analyser);
     analyser.connect(audioContext.destination);
 
-    source.start();
+    source.start(0);
     green = 50
     blue = 50
     index = 0
-    let ended;
+
 
     function draw() {
       const WIDTH = canvas.width;
       const HEIGHT = canvas.height;
-
-      
 
       analyser.getByteFrequencyData(dataArray);
 
       ctx.fillStyle = 'rgb(200, 200, 200)';
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
       
-      const barWidth = (WIDTH / bufferLength)* 2 ;
+      // minimum bar width of 2px
+      w = setw.value;
+      const barWidth = Math.max((WIDTH / bufferLength)* 2, w);
       let x = 0;
 
       // control the cover of the bars, have them fade
@@ -100,7 +106,7 @@ window.onload = function() {
 
       if (!stopAudio){
         requestAnimationFrame(draw);
-      } else if (!ended) {
+      } else {
         source.stop();
         requestAnimationFrame(draw);
       }
