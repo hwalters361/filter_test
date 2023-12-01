@@ -47,13 +47,13 @@ def process_audio(filepath, filter_type, cutoff_frequency):
     plt.semilogy(frequencies, spectrum_before)
     plt.title('Original Audio Spectrum')
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Amplitude')
+    plt.ylabel('Amplitude (log scale)')
 
     plt.subplot(2, 1, 2)
     plt.semilogy(frequencies, spectrum_after)
     plt.title(f'Filtered Audio Spectrum, {filter_type} at {cutoff_frequency} Hz')
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Amplitude')
+    plt.ylabel('Amplitude (log scale)')
 
     plt.tight_layout()
     plt.show()
