@@ -1,10 +1,19 @@
 window.onload = function() {
+
+
   let stopAudio = false;
   let source = null; // Declare source variable outside the function
 
-  const audioFileInput = document.getElementById('audioFile');
-  const canvas = document.getElementById('spectrogram');
-  const ctx = canvas.getContext('2d');
+  var audioFileInput = document.getElementById('audioFile');
+  var canvas = document.getElementById('spectrogram');
+  var parent = document.getElementById("body");
+  canvas.width = parent.offsetWidth-10;
+  var ctx = canvas.getContext('2d');
+
+
+  var setB = document.getElementById('setB');
+  B = setB.value;
+  console.log("okayyy");
 
   audioFileInput.addEventListener('change', function(event) {
     const file = event.target.files[0];
@@ -28,14 +37,6 @@ window.onload = function() {
           source = audioContext.createBufferSource(); // Create a new buffer source each time
           source.buffer = buffer;
 
-          // Create a low-pass filter
-          const filter = audioContext.createBiquadFilter();
-          filter.type = 'lowshelf';
-          filter.frequency.value = 400; // Set the frequency value as desired
-
-          // Connect nodes: source -> filter -> destination
-          source.connect(filter);
-          filter.connect(audioContext.destination);
           
           visualizeSpectrogram(source, audioContext, canvas, ctx);
         });
@@ -58,33 +59,50 @@ window.onload = function() {
     analyser.connect(audioContext.destination);
 
     source.start();
+    green = 50
+    blue = 50
+    index = 0
+    let ended;
 
     function draw() {
       const WIDTH = canvas.width;
       const HEIGHT = canvas.height;
 
-      if (!stopAudio){
-        requestAnimationFrame(draw);
-      } else {
-        source.stop();
-        requestAnimationFrame(draw);
-      }
+      
 
       analyser.getByteFrequencyData(dataArray);
 
       ctx.fillStyle = 'rgb(200, 200, 200)';
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-      const barWidth = (WIDTH / bufferLength) * 2.5;
+      
+      const barWidth = (WIDTH / bufferLength)* 2 ;
       let x = 0;
 
+      // control the cover of the bars, have them fade
+      B = setB.value; // 
+      B = (B-1) / (10-1) * (0.1 - 0.0005) + 0.0005
+      period = (2*3.1415) / B
+      green = 50 * Math.cos(B * (index) ) + 50
+      blue = 50 * Math.cos(B * (index + (period * (1/3)))) + 50
+      red = 50 * Math.cos(B * (index + (period * 2/3)) ) + 50
+
+      index = index + 1
+      
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = dataArray[i];
-
-        ctx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        
+        ctx.fillStyle = `rgb(${barHeight + red}, ${barHeight + green}, ${barHeight + blue})`;
         ctx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2);
 
         x += barWidth + 1;
+      }
+      console.log("animating");
+
+      if (!stopAudio){
+        requestAnimationFrame(draw);
+      } else if (!ended) {
+        source.stop();
+        requestAnimationFrame(draw);
       }
     }
 
