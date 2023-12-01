@@ -66,12 +66,12 @@ def main():
     )
     parser.add_argument('filename')
     parser.add_argument('filterType') # highpass or lowpass
-    parser.add_argument('frequency') # in Hz
+    parser.add_argument('cutoff') # in Hz
     args = parser.parse_args()
     
     file_path = args.filename
     filter_type = args.filterType
-    frequency = args.frequency
+    frequency = args.cutoff
     
     process_audio(file_path,filter_type, frequency)
     
